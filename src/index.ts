@@ -1,9 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from 'zod';
 import { getAllSkills, getSkillByName, searchSkills } from './skills.js';
+
+const execFileAsync = promisify(execFile);
 
 const app = express();
 app.use(cors());
@@ -70,6 +74,26 @@ function createServer(): McpServer {
       return {
         content: [{ type: "text", text: JSON.stringify(catalog, null, 2) }]
       };
+    }
+  );
+
+  server.tool(
+    "convert_to_markdown",
+    "Convierte un archivo (PDF, DOCX, PPTX, XLSX, HTML, audio, imagen) o una URL a texto Markdown usando MarkItDown.",
+    {
+      source: z.string().describe("Ruta de archivo o URL a convertir")
+    },
+    async ({ source }) => {
+      try {
+        // execFile (no exec/shell) - `source` viene del cliente MCP, no confiar en él para interpolar un shell.
+        const { stdout } = await execFileAsync('markitdown', [source]);
+        return { content: [{ type: "text", text: stdout }] };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error convirtiendo '${source}': ${(err as Error).message}` }],
+          isError: true
+        };
+      }
     }
   );
 

@@ -83,3 +83,37 @@ docker compose down            # apagar
 
 El volumen `~/.ot:/root/.ot` es lo único con estado: puedes borrar y
 reconstruir el contenedor sin perder tus skills.
+
+## 5. Convertir documentos a Markdown (MarkItDown)
+
+El tool `convert_to_markdown` (expuesto por el MCP server) convierte PDF,
+DOCX, PPTX, XLSX, HTML, audio o imágenes a texto usando
+[MarkItDown](https://github.com/microsoft/markitdown), instalado en la imagen
+Docker. No crea una skill automáticamente — el resultado es texto plano que
+tú decides si guardar como `.md` en `~/.ot/skills/`.
+
+## 6. CLI mínima
+
+```bash
+npm run cli -- list                 # lista el catálogo completo
+npm run cli -- add-skill mi-skill   # crea ~/.ot/skills/mi-skill.md con plantilla
+```
+
+## 7. Exportar a AGENTS.md (clientes no-MCP)
+
+Para herramientas que no hablan MCP pero sí leen `AGENTS.md` (como OpenCode),
+genera el archivo a partir de tus skills `scope: global`:
+
+```bash
+npm run export-agents -- /ruta/al/proyecto
+```
+
+Sobreescribe `AGENTS.md` en esa carpeta — no lo edites a mano, vuelve a
+correr el comando cuando cambien tus skills.
+
+## 8. Contexto personal siempre cargado
+
+Es solo una convención, no requiere código: si creas
+`~/.ot/skills/_global-context.md`, aparece en el catálogo como cualquier
+otra skill, pero el nombre (`_global-context`) marca que es la que el
+cliente MCP debería pedir primero con `get_skill`.

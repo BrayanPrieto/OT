@@ -12,6 +12,7 @@ En lugar de copiar tus archivos `.md` de instrucciones de un cliente a otro, OT 
   - `list_skills`: Devuelve el catálogo completo de skills instaladas.
   - `get_skill`: Recupera el texto íntegro de una skill.
   - `search_skills`: Búsqueda de skills por palabra clave.
+  - `convert_to_markdown`: Convierte un archivo o URL (PDF, DOCX, PPTX, XLSX, audio, imagen) a Markdown vía [MarkItDown](https://github.com/microsoft/markitdown).
 - **Skills Remotas ("Zero Config"):** Posibilidad de agregar repositorios externos (ej. la regla global *ponytail*). Al hacer `npm install`, estos repositorios se descargan y sincronizan en `~/.ot/remote-skills/`, fuera del repositorio principal de OT.
 - **Fuente única en `~/.ot/`:** el catálogo de skills vive en una carpeta fija de tu máquina, no en el directorio desde el que se ejecuta el proceso — así da igual desde dónde arranques el servidor (o si corre dentro de Docker).
 - **Soporte de Frontmatter:** Parsea y extrae metadatos en formato YAML (descripción, tags, scope) desde los archivos `.md` locales y remotos.
@@ -64,6 +65,8 @@ skills remotas (repos git) y nuevos tools al servidor MCP.
 - `src/index.ts`: Punto de entrada del servidor Express y configuración MCP.
 - `src/skills.ts`: Motor de búsqueda y parseo de archivos Markdown.
 - `scripts/sync-skills.js`: Script de clonación/sincronización de repos remotos.
+- `scripts/ot-cli.ts`: CLI mínima (`npm run cli -- list|add-skill`).
+- `scripts/export-agents.ts`: Genera `AGENTS.md` para clientes no-MCP (`npm run export-agents`).
 - `ot-config.json`: Archivo de manifiesto para skills remotas.
 - `Dockerfile` / `docker-compose.yml`: para correr OT persistente vía Docker/OrbStack.
 - `~/.ot/skills/`, `~/.ot/remote-skills/`: fuente única de verdad del catálogo (fuera del repo).

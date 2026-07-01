@@ -1,6 +1,12 @@
-FROM node:22-alpine
+FROM node:22-slim
 
-RUN apk add --no-cache git
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# ponytail: solo el paquete base de markitdown (PDF/DOCX/PPTX/XLSX/HTML/texto).
+# Extras de audio/OCR (markitdown[all]) se agregan acá si algún día se necesitan.
+RUN pip install --no-cache-dir --break-system-packages markitdown
 
 WORKDIR /app
 
