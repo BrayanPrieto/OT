@@ -1,12 +1,14 @@
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+const OT_HOME = process.env.OT_HOME || path.join(os.homedir(), '.ot');
 const CONFIG_FILE = path.resolve(process.cwd(), 'ot-config.json');
-const REMOTE_SKILLS_DIR = path.resolve(process.cwd(), '.ot-remote-skills');
+const REMOTE_SKILLS_DIR = path.join(OT_HOME, 'remote-skills');
 
 async function syncSkills() {
   try {

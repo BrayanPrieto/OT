@@ -12,7 +12,8 @@ En lugar de copiar tus archivos `.md` de instrucciones de un cliente a otro, OT 
   - `list_skills`: Devuelve el catálogo completo de skills instaladas.
   - `get_skill`: Recupera el texto íntegro de una skill.
   - `search_skills`: Búsqueda de skills por palabra clave.
-- **Skills Remotas ("Zero Config"):** Posibilidad de agregar repositorios externos (ej. la regla global *ponytail*). Al hacer `npm install`, estos repositorios se descargan y sincronizan en la carpeta oculta `.ot-remote-skills/` para mantener limpio el repositorio principal de OT.
+- **Skills Remotas ("Zero Config"):** Posibilidad de agregar repositorios externos (ej. la regla global *ponytail*). Al hacer `npm install`, estos repositorios se descargan y sincronizan en `~/.ot/remote-skills/`, fuera del repositorio principal de OT.
+- **Fuente única en `~/.ot/`:** el catálogo de skills vive en una carpeta fija de tu máquina, no en el directorio desde el que se ejecuta el proceso — así da igual desde dónde arranques el servidor (o si corre dentro de Docker).
 - **Soporte de Frontmatter:** Parsea y extrae metadatos en formato YAML (descripción, tags, scope) desde los archivos `.md` locales y remotos.
 
 ## Requisitos
@@ -34,9 +35,17 @@ npm install
 ## Uso
 
 1. **Levantar el servidor:**
+
+   Local:
    ```bash
    npm start
    ```
+
+   Con Docker / OrbStack (recomendado para que corra persistente en background):
+   ```bash
+   docker compose up --build -d
+   ```
+
    *Esto iniciará el servidor en `http://localhost:3001`.*
 
 2. **Configurar tu cliente MCP:**
@@ -45,37 +54,10 @@ npm install
    http://localhost:3001/sse
    ```
 
-## Añadir Skills
+## Añadir Skills y Tools
 
-### Skills Locales
-Simplemente crea archivos `.md` dentro de la carpeta `skills/`. Ejemplo de estructura (`skills/mi-skill.md`):
-
-```markdown
----
-name: mi-skill
-description: Instrucciones sobre cómo hacer algo
-tags: [ejemplo, prueba]
-scope: global
----
-# Instrucciones
-Aquí van tus directivas de IA...
-```
-
-### Skills Remotas (Repositorios)
-Edita el archivo `ot-config.json` en la raíz del proyecto para añadir tus repositorios preferidos:
-
-```json
-{
-  "remoteSkills": [
-    {
-      "name": "ponytail",
-      "url": "https://github.com/DietrichGebert/ponytail.git"
-    }
-  ]
-}
-```
-
-Luego vuelve a ejecutar `npm install` o directamente `node scripts/sync-skills.js` para sincronizar.
+Ver [SKILLS.md](./SKILLS.md) para el detalle de cómo agregar skills locales,
+skills remotas (repos git) y nuevos tools al servidor MCP.
 
 ## Estructura del Proyecto
 
@@ -83,4 +65,5 @@ Luego vuelve a ejecutar `npm install` o directamente `node scripts/sync-skills.j
 - `src/skills.ts`: Motor de búsqueda y parseo de archivos Markdown.
 - `scripts/sync-skills.js`: Script de clonación/sincronización de repos remotos.
 - `ot-config.json`: Archivo de manifiesto para skills remotas.
-- `.ot-remote-skills/`: Carpeta temporal e ignorada en Git donde residen los repos remotos.
+- `Dockerfile` / `docker-compose.yml`: para correr OT persistente vía Docker/OrbStack.
+- `~/.ot/skills/`, `~/.ot/remote-skills/`: fuente única de verdad del catálogo (fuera del repo).

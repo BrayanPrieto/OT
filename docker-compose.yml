@@ -1,0 +1,8 @@
+services:
+  ot:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ~/.ot:/root/.ot
+    restart: unless-stopped

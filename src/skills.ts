@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 import matter from 'gray-matter';
 
@@ -10,8 +11,11 @@ export interface Skill {
   content: string;
 }
 
-const LOCAL_SKILLS_DIR = path.resolve(process.cwd(), 'skills');
-const REMOTE_SKILLS_DIR = path.resolve(process.cwd(), '.ot-remote-skills');
+// ponytail: fuente única de verdad fija (~/.ot), no cwd - así el catálogo
+// no depende de desde dónde se lance `npm start`. Ver OT-arquitectura.md 5.2.
+const OT_HOME = process.env.OT_HOME || path.join(os.homedir(), '.ot');
+const LOCAL_SKILLS_DIR = path.join(OT_HOME, 'skills');
+const REMOTE_SKILLS_DIR = path.join(OT_HOME, 'remote-skills');
 
 async function getFilesRecursively(dir: string): Promise<string[]> {
   try {
