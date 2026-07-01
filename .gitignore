@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.ot-remote-skills/
+.env
+.DS_Store
