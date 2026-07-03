@@ -9,6 +9,7 @@
     "build": "tsc",
     "postinstall": "node scripts/sync-skills.js",
     "cli": "node --no-warnings=ExperimentalWarning --loader ts-node/esm scripts/ot-cli.ts",
+    "sync": "node --no-warnings=ExperimentalWarning --loader ts-node/esm scripts/ot-cli.ts sync",
     "export-agents": "node --no-warnings=ExperimentalWarning --loader ts-node/esm scripts/export-agents.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

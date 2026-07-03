@@ -97,7 +97,43 @@ tú decides si guardar como `.md` en `~/.ot/skills/`.
 ```bash
 npm run cli -- list                 # lista el catálogo completo
 npm run cli -- add-skill mi-skill   # crea ~/.ot/skills/mi-skill.md con plantilla
+npm run sync                        # sincroniza skills a los clientes nativos
 ```
+
+## 6.1 Activar skills en cualquier cliente MCP (prompts y resources)
+
+Cada skill del catálogo se expone automáticamente como:
+
+- **Prompt MCP** → slash command en el cliente (ej. `/mcp__ot__ponytail` en
+  Claude Code). Úsalo para activar skills de comportamiento bajo demanda sin
+  copiar archivos.
+- **Resource MCP** (`skill://nombre`) → adjuntable como contexto (`@` en
+  Claude Code).
+
+Las skills nuevas aparecen en la próxima conexión del cliente (reinicia la
+sesión o reconecta el MCP).
+
+## 6.2 Skills siempre-activas: `npm run sync`
+
+Los prompts MCP son bajo demanda. Si una skill debe estar activa en *todas*
+las sesiones de un cliente (ej. ponytail como regla global), `npm run sync`
+genera los `SKILL.md` nativos en los directorios configurados en
+`ot-config.json`:
+
+```json
+{
+  "syncTargets": {
+    "skillDirs": ["~/.claude/skills", "~/.config/otro-cliente/skills"]
+  }
+}
+```
+
+Reglas:
+- Solo sincroniza skills con `scope: global`.
+- Los archivos generados llevan el marcador `<!-- OT sync ... -->`; los que
+  no lo tienen (skills tuyas hechas a mano) **nunca** se tocan.
+- Vuelve a correr `npm run sync` cuando cambien tus skills — `~/.ot` sigue
+  siendo la única fuente de verdad.
 
 ## 7. Exportar a AGENTS.md (clientes no-MCP)
 
@@ -111,9 +147,11 @@ npm run export-agents -- /ruta/al/proyecto
 Sobreescribe `AGENTS.md` en esa carpeta — no lo edites a mano, vuelve a
 correr el comando cuando cambien tus skills.
 
-## 8. Contexto personal siempre cargado
+## 8. Contexto personal siempre cargado (`_global-context`)
 
-Es solo una convención, no requiere código: si creas
-`~/.ot/skills/_global-context.md`, aparece en el catálogo como cualquier
-otra skill, pero el nombre (`_global-context`) marca que es la que el
-cliente MCP debería pedir primero con `get_skill`.
+Si creas `~/.ot/skills/_global-context.md`, su contenido se incluye en las
+`instructions` del servidor MCP, que los clientes (Claude Code, OpenCode,
+Cursor...) inyectan en el system prompt **automáticamente al conectar** — es
+la "memoria inicial" de OT: cada sesión nueva arranca sabiendo quién eres y
+qué skills existen (el catálogo completo también viaja ahí), sin llamar
+ningún tool. Los cambios se aplican en la próxima conexión del cliente.

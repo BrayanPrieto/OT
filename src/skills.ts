@@ -45,8 +45,10 @@ export async function getAllSkills(): Promise<Skill[]> {
     
     // Ignorar READMEs, changelogs y archivos no relacionados
     if (fileName.toLowerCase().includes('readme') || fileName.toLowerCase() === 'changelog.md') continue;
-    // Ignorar archivos en carpetas como .github o hooks
-    if (filePath.includes('.github/') || filePath.includes('hooks/')) continue;
+    // Ignorar carpetas de soporte de los repos (docs, tests, ejemplos...)
+    // que no son skills — sin esto, un repo como ponytail mete ~30 pseudo-skills.
+    const IGNORED_DIRS = ['.github', 'hooks', 'docs', 'examples', 'tests', 'benchmarks', 'assets', 'scripts', 'node_modules'];
+    if (IGNORED_DIRS.some(d => filePath.includes(`${path.sep}${d}${path.sep}`))) continue;
 
     try {
       const fileContent = await fs.readFile(filePath, 'utf-8');
@@ -84,7 +86,17 @@ export async function getAllSkills(): Promise<Skill[]> {
     }
   }
 
-  return skills;
+  // Dedup por nombre: los repos remotos suelen empaquetar la misma skill en
+  // varios formatos (skills/, commands/, extensiones por cliente). Gana la
+  // versión con más contenido. ponytail: heurística simple, suficiente.
+  const byName = new Map<string, Skill>();
+  for (const s of skills) {
+    const existing = byName.get(s.name);
+    if (!existing || s.content.length > existing.content.length) {
+      byName.set(s.name, s);
+    }
+  }
+  return [...byName.values()];
 }
 
 export async function getSkillByName(name: string): Promise<Skill | undefined> {
